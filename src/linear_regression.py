@@ -67,6 +67,7 @@ def linear_regression(X, Y, nb_iter, learning_rate):
         cost_history.append(cost(weight, X, Y))
         weight = update_weight(weight, X, Y, learning_rate)
     final_hyp = hypothesis(weight, X)
+    X, avg, std_dev = mean_normalization(X)
     accuracy = np.average(abs(final_hyp - Y))
     return weight, cost_history, accuracy
 
@@ -77,6 +78,25 @@ def predict(mileage, weight, average, std_dev):
     return price
 
 
+class LinearRegression:
+
+    def __init__(self):
+        self.accuracy = 0
+        self.weight = None
+        self.norm_average = 0
+        self.norm_stddev = 0
+        self.nb_iter = 0
+        self.learning_rate = 0
+
+    def mean_normalization(self):
+        average = np.average(data, axis=0)
+        std_dev = np.std(data, axis=0)
+        return (data - average) / std_dev, average, std_dev
+
+    def train(self, m_x, m_y, nb_iter, learning_rate):
+
+
+
 if __name__ == "__main__":
     data_file = "../data.csv"
     with Path(data_file).open(mode='r', encoding='utf-8') as file:
@@ -85,7 +105,6 @@ if __name__ == "__main__":
     df = np.array(data[1:], dtype="float64")
     X = df[:, 0:1]
     Y = df[:, 1:2]
-    X, avg, std_dev = mean_normalization(X)
     w, cost_hist, accuracy = linear_regression(X, Y, 200, 0.05)
     print("weight:")
     print(w)
