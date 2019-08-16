@@ -33,7 +33,7 @@ class MeanNormScaler:
 
 class LinearRegression:
 
-    def __init__(self):
+    def __init__(self, verbose=False):
         self.accuracy = 0
         self.weight = None
         self.scaler = None
@@ -43,7 +43,7 @@ class LinearRegression:
         self.X = None
         self.X_original = None
         self.y = None
-        self.verbose = False
+        self.verbose = verbose
 
     def load_data_from_csv(self, csv_file, y_col="first", remove_header=False):
         """
@@ -116,6 +116,11 @@ class LinearRegression:
             self.cost_history.append(self._compute_cost())
         final_hyp = self._compute_hypothesis()
         self.accuracy = np.average(abs(final_hyp - self.y))
+        if self.verbose:
+            print("Training completed!")
+            print("Accuracy on train set = {}".format(self.accuracy))
+            plt.plot(self.cost_history)
+            plt.show()
 
     def predict(self, x):
         """
@@ -126,13 +131,16 @@ class LinearRegression:
         if not isinstance(x, np.ndarray):
             if not isinstance(x, list):
                 raise TypeError("x shall be a list or a np array")
-            x = np.array([x])
+            x_pred = np.array([x])
         if self.scaler:
-            x = self.scaler.transform(x)
-        x = np.insert(x, 0, np.ones(x.shape[0]), axis=1)
-        return np.matmul(x, self.weight)
+            x_pred = self.scaler.transform(x_pred)
+        x_pred = np.insert(x_pred, 0, np.ones(x_pred.shape[0]), axis=1)
+        prediction = np.matmul(x_pred, self.weight)
+        plt.scatter(self.X_original, self.y, c='blue')
+        plt.scatter(x, prediction, c='red')
+        return prediction
 
     def plot_train_set(self):
         print(self.X_original)
-        plt.plot(x=self.X_original, y=self.y)
-        # plt.show()
+        plt.scatter(self.X_original, self.y)
+        plt.show()
