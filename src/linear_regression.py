@@ -2,6 +2,7 @@ import numpy as np
 import csv
 from pathlib import Path
 import matplotlib.pyplot as plt
+import pickle
 
 
 class MeanNormScaler:
@@ -58,6 +59,7 @@ class LinearRegression:
         with Path(csv_file).open(mode='r', encoding='utf-8') as fd:
             reader = csv.reader(fd)
             data = list(reader)
+        print(data)
         if remove_header:
             data = data[1:]
         df = np.array(data, dtype="float64")
@@ -119,8 +121,8 @@ class LinearRegression:
         if self.verbose:
             print("Training completed!")
             print("Accuracy on train set = {}".format(self.accuracy))
-            plt.plot(self.cost_history)
-            plt.show()
+            # plt.plot(self.cost_history)
+            # plt.show()
 
     def predict(self, x):
         """
@@ -132,15 +134,40 @@ class LinearRegression:
             if not isinstance(x, list):
                 raise TypeError("x shall be a list or a np array")
             x_pred = np.array([x])
+        else:
+            x_pred = x
         if self.scaler:
             x_pred = self.scaler.transform(x_pred)
         x_pred = np.insert(x_pred, 0, np.ones(x_pred.shape[0]), axis=1)
+        if self.weight is None:
+            self.weight = np.zeros((x_pred.shape[1], 1))
         prediction = np.matmul(x_pred, self.weight)
-        plt.scatter(self.X_original, self.y, c='blue')
-        plt.scatter(x, prediction, c='red')
+        # plt.scatter(self.X_original, self.y, c='blue')
+        # plt.scatter(x, prediction, c='red')
         return prediction
 
     def plot_train_set(self):
         print(self.X_original)
         plt.scatter(self.X_original, self.y)
         plt.show()
+
+    def save_model(self, file):
+        with Path(file).open(mode='wb') as fd:
+            pickle.dump(self.__dict__, fd)
+
+    def load_model(self, file):
+        with Path(file).open(mode='rb') as fd:
+            try:
+                model = pickle.load(fd)
+            except (pickle.UnpicklingError, EOFError) as err:
+                print("Can't load model from '{}' because : {}".format(file, err))
+                return False
+        if not isinstance(model, dict):
+            print("Given file '{}' is not a valid LinearRegression model".format(file))
+            return False
+        for key in model.keys():
+            if key not in self.__dict__.keys():
+                print("Given file '{}' is not a valid LinearRegression model".format(file))
+                return False
+        self.__dict__.update(model)
+        return True
