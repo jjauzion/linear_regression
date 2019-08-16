@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 
 class MeanNormScaler:
@@ -40,6 +41,7 @@ class LinearRegression:
         self.learning_rate = 0
         self.cost_history = []
         self.X = None
+        self.X_original = None
         self.y = None
         self.verbose = False
 
@@ -58,13 +60,14 @@ class LinearRegression:
             data = list(reader)
         if remove_header:
             data = data[1:]
-        df = np.array(data[1:], dtype="float64")
+        df = np.array(data, dtype="float64")
         if y_col == "last":
             self.X = df[:, 0:-1]
             self.y = df[:, -1:]
         else:
             self.X = df[:, 1:]
             self.y = df[:, 0:1]
+        self.X_original = np.copy(self.X)
 
     def _compute_hypothesis(self):
         """
@@ -117,15 +120,19 @@ class LinearRegression:
     def predict(self, x):
         """
         Make prediction based on x
-        :param x: List or m by 1 numpy array of parameters
+        :param x: List or 1 by n numpy array with n = nb of parameter
         :return:
         """
         if not isinstance(x, np.ndarray):
             if not isinstance(x, list):
                 raise TypeError("x shall be a list or a np array")
             x = np.array([x])
-            x = x.transpose()
         if self.scaler:
             x = self.scaler.transform(x)
         x = np.insert(x, 0, np.ones(x.shape[0]), axis=1)
         return np.matmul(x, self.weight)
+
+    def plot_train_set(self):
+        print(self.X_original)
+        plt.plot(x=self.X_original, y=self.y)
+        # plt.show()
