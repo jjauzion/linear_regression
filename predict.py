@@ -12,7 +12,7 @@ if Path(args.model).is_file():
     loaded = model.load_model(args.model)
 if not loaded:
     print("--> WARNING: No valid model file found. Prediction will be done with untrained model.")
-while(1):
+while 1:
     mileage = input("What mileage is your car ?\n")
     try:
         float(mileage)
