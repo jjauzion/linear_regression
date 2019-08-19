@@ -27,3 +27,11 @@ class MeanNormScaler:
         self.fit(data)
         return self.transform(data)
 
+
+class MinMaxScaler():
+
+    def __init__(self):
+        """
+        TO DO
+        """
+
