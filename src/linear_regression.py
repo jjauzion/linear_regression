@@ -21,6 +21,20 @@ class LinearRegression:
         self.y = None
         self.verbose = verbose
 
+    def plot_training(self):
+        fig = plt.figure("Training synthesis")
+        plt.subplot(121)
+        plt.plot(self.cost_history)
+        plt.title("Cost history", )
+        plt.xlabel("nb of iterations")
+        plt.ylabel("Cost")
+        plt.subplot(122)
+        plt.scatter(x=self.X_original, y=self.y)
+        plt.title("Training dataset")
+        plt.xlabel("mileage")
+        plt.ylabel("price")
+        plt.show()
+
     def load_data_from_csv(self, csv_file, y_col="first", remove_header=False):
         """
         load data from a comma (',') separated file where columns are parameters and line experience
@@ -100,10 +114,7 @@ class LinearRegression:
             print("Training completed!")
             print("Accuracy on train set = {}".format(self.accuracy))
         if verbose > 1:
-            fig = plt.figure("Cost history")
-            plt.plot(self.cost_history)
-            plt.title("Cost history")
-            plt.show(block=False)
+            self.plot_training()
 
     def predict(self, x):
         """

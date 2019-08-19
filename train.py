@@ -49,6 +49,5 @@ model.train(args.nb_iter, args.learning_rate, verbose=args.verbose)
 model.save_model(args.output)
 if args.verbose > 0:
     print("Model saved to {}".format(args.output))
-input()
 
 

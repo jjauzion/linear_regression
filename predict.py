@@ -1,6 +1,24 @@
-from src.linear_regression import LinearRegression
 import argparse
 from pathlib import Path
+import matplotlib.pyplot as plt
+import numpy as np
+
+from src.linear_regression import LinearRegression
+
+
+def plot_synthesis(model, mileage, price):
+    fig = plt.figure()
+    plt.scatter(x=model.X_original, y=model.y, label="training Dataset")
+    plt.scatter(x=mileage, y=price, c='r', label="Prediction")
+    imin = np.argmin(model.X, axis=0)[1]
+    imax = np.argmax(model.X, axis=0)[1]
+    p1 = np.matmul(model.X[imin], model.weight)
+    p2 = np.matmul(model.X[imax], model.weight)
+    plt.plot([model.X_original[imin], model.X_original[imax]], [p1, p2], c='g', label="Prediction line")
+    plt.legend()
+    plt.xlabel("Mileage")
+    plt.ylabel("Price")
+    plt.show()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="model/model.pkl", help="Path to saved model pickle")
@@ -27,3 +45,4 @@ while 1:
 print("mileage = {}".format(mileage))
 price = model.predict([mileage])
 print("Estimated price : {}".format(price))
+plot_synthesis(model, mileage, price)
