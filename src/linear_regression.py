@@ -89,18 +89,25 @@ class LinearRegression:
         return self.weight - self.learning_rate / self.X.shape[0] * \
                np.matmul(self.X.transpose(), self._compute_hypothesis() - self.y)
 
-    def train(self, nb_iter, learning_rate, verbose=1):
+    def train(self, nb_iter, learning_rate, scaler_type="standard", verbose=1):
         """
         :param X: m by n matrix with m=nb of experience and n=nb of params
         :param Y: m by 1 matrix
         :param nb_iter: number of iteration
         :param learning_rate: learning rate
+        :param scaler_type: Define how to scale the train data set. Standard scaler by default (z = (x - avg) / std))
         :param verbose: Int. Level of verbosity: 0 = no print ; 1 = result print ; 2 = result plot
         :return: tuple (weight, cost_history) with weight as a n by 1 matrix and cost_history as a list
         """
         self.nb_iter = nb_iter
         self.learning_rate = learning_rate
-        self.scaler = scaler.MeanNormScaler()
+        if scaler_type == "standard":
+            self.scaler = scaler.MeanNormScaler()
+        elif scaler_type == "minmax":
+            self.scaler = scaler.MinMaxScaler()
+        else:
+            print("'{}' is not a valid scaler. Standard scaler will be used instead".format(scaler_type))
+            self.scaler = scaler.MeanNormScaler()
         self.X = self.scaler.fit_transform(self.X)
         self.X = np.insert(self.X, 0, np.ones(self.X.shape[0]), axis=1)
         self.weight = np.random.random((self.X.shape[1], 1))
