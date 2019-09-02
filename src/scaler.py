@@ -16,7 +16,7 @@ class MeanNormScaler:
         self.scale = np.std(data, axis=0)
 
     def transform(self, data):
-        if not self.mean or not self.scale:
+        if self.mean is None or self.scale is None:
             raise RuntimeError("Scaler must be fitted to the data before transform.")
         normalized_data = np.zeros(data.shape)
         for i, col in enumerate(data.T):
@@ -45,7 +45,7 @@ class MinMaxScaler():
         self.range = self.max - self.min
 
     def transform(self, data):
-        if not self.min or not self.max:
+        if self.min is None or self.max is None:
             raise RuntimeError("Scaler must be fitted to the data before transform.")
         normalized_data = np.zeros(data.shape)
         for i, col in enumerate(data.T):

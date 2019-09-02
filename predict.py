@@ -45,4 +45,5 @@ while 1:
 print("mileage = {}".format(mileage))
 price = model.predict([mileage])
 print("Estimated price : {}".format(price))
-plot_synthesis(model, mileage, price)
+if model.X:
+    plot_synthesis(model, mileage, price)
