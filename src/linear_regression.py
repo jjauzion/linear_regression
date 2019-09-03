@@ -41,8 +41,9 @@ class LinearRegression:
         plt.xlabel("nb of iterations")
         plt.ylabel("Cost")
         plt.subplot(122)
-        pred = np.sort(np.hstack((self.X_original, self.y_pred)), axis=0)
-        plt.plot(self.X_original, self.y, 'xr', pred[:, 0], pred[:, 1], 'b')
+        # pred = np.sort(np.hstack((self.X_original, self.y_pred)), axis=0)
+        order_ind = self.X_original[:,0].argsort(axis=0)
+        plt.plot(self.X_original[order_ind], self.y[order_ind], 'xr', self.X_original[order_ind], self.y_pred[order_ind], 'b')
         plt.title("Training dataset")
         plt.xlabel("mileage")
         plt.ylabel("price")
@@ -53,7 +54,7 @@ class LinearRegression:
             return False
         plt.scatter(self.X_original[:, 0], self.y, c='k', marker='.', label="training Dataset")
         pred = np.sort(np.hstack((self.X_original, self.y_pred)), axis=0)
-        plt.plot(mileage, prediction, 'xg', pred[:, 0], pred[:, 1], 'r')
+        plt.plot(mileage, prediction, '*g', pred[:, 0], pred[:, 1], 'r', markersize=20)
         plt.legend(("prediction", "polyfit line", "train dataset"))
         plt.show()
         return True

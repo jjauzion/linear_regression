@@ -32,6 +32,7 @@ parser.add_argument("--no_header", action="store_true", help="The csv data file 
 parser.add_argument("--data_augmentation", action="store_true", help="Will add the square value of X last column to train data set for 2nd degree polynomal fit")
 parser.add_argument("-i", "--nb_iter", type=check_positive, default=200, help="number of iteration for the training")
 parser.add_argument("-lr", "--learning_rate", type=check_positive_float, default=0.05, help="number of iteration for the training")
+parser.add_argument("-f", "--force", action="store_true", help="number of iteration for the training")
 parser.add_argument("-v", "--verbose", type=int, choices=[0, 1, 2], default=1,
                     help="verbose mode: 0 = no print ; 1 = print result ; 2 = plot result")
 args = parser.parse_args()
@@ -40,7 +41,7 @@ if not Path(args.data).is_file():
     print("File {} not found.".format(args.data))
     exit(0)
 if Path(args.output).is_file():
-    overwrite = None
+    overwrite = "y" if args.force else None
     while overwrite != "y" and overwrite != "n":
         overwrite = input("File {} already exist. Do you want to overwrite it ? (y/n)\n".format(args.output))
     if overwrite == "n":
