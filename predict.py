@@ -22,6 +22,7 @@ def plot_synthesis(model, mileage, price):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="model/model.pkl", help="Path to saved model pickle")
+parser.add_argument("--mileage", type=int, default=-1, help="Mileage of the car you want to price")
 args = parser.parse_args()
 
 model = LinearRegression()
@@ -30,20 +31,24 @@ if Path(args.model).is_file():
     loaded = model.load_model(args.model)
 if not loaded:
     print("--> WARNING: No valid model file found. Prediction will be done with untrained model.")
-while 1:
-    mileage = input("What mileage is your car ?\n")
-    try:
-        float(mileage)
-    except ValueError as err:
-        print("Wrong value: {}".format(err))
-    else:
-        mileage = float(mileage)
-        if mileage >= 0:
-            break
+print("mileage = ", args.mileage)
+if args.mileage < 0:
+    while 1:
+        mileage = input("What mileage is your car ?\n")
+        try:
+            float(mileage)
+        except ValueError as err:
+            print("Wrong value: {}".format(err))
         else:
-            print("Mileage shall be positive. Got {}".format(mileage))
-print("mileage = {}".format(mileage))
-x = [mileage]
+            mileage = float(mileage)
+            if mileage >= 0:
+                break
+            else:
+                print("Mileage shall be positive. Got {}".format(mileage))
+    print("mileage = {}".format(mileage))
+    x = [mileage]
+else:
+    x = [args.mileage]
 price = model.predict(x, verbose=2)
 print("Estimated price : {}".format(price))
 # if model.X is not None:

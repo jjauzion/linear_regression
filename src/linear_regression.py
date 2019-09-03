@@ -41,11 +41,22 @@ class LinearRegression:
         plt.xlabel("nb of iterations")
         plt.ylabel("Cost")
         plt.subplot(122)
-        plt.plot(self.X_original, self.y, 'xr', self.X_original, self.y_pred, 'b')
+        pred = np.sort(np.hstack((self.X_original, self.y_pred)), axis=0)
+        plt.plot(self.X_original, self.y, 'xr', pred[:, 0], pred[:, 1], 'b')
         plt.title("Training dataset")
         plt.xlabel("mileage")
         plt.ylabel("price")
         plt.show()
+
+    def plot_prediction(self, mileage, prediction):
+        if self.X_original is None:
+            return False
+        plt.scatter(self.X_original[:, 0], self.y, c='k', marker='.', label="training Dataset")
+        pred = np.sort(np.hstack((self.X_original, self.y_pred)), axis=0)
+        plt.plot(mileage, prediction, 'xg', pred[:, 0], pred[:, 1], 'r')
+        plt.legend(("prediction", "polyfit line", "train dataset"))
+        plt.show()
+        return True
 
     def load_data_from_csv(self, csv_file, y_col="first", remove_header=False, data_augmentation=False):
         """
@@ -139,15 +150,6 @@ class LinearRegression:
             print("Model evaluation: RMSE = {} ; MAE = {}".format(self.rmse, self.mae))
         if verbose > 1:
             self.plot_training()
-
-    def plot_prediction(self, mileage, prediction):
-        if self.X_original is None:
-            return False
-        plt.scatter(x=self.X_original[:, 0], y=self.y, label="training Dataset")
-        poly = self.predict(self.X_original, verbose=0)
-        plt.plot(mileage, prediction, 'og', self.X_original[:, 0], poly, 'xr')
-        plt.show()
-        return True
 
     def predict(self, x, verbose=1):
         """
