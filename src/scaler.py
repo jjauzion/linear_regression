@@ -20,7 +20,7 @@ class MeanNormScaler:
             raise RuntimeError("Scaler must be fitted to the data before transform.")
         normalized_data = np.zeros(data.shape)
         for i, col in enumerate(data.T):
-            normalized_data[:, i] = (col - self.mean) / self.scale
+            normalized_data[:, i] = (col - self.mean[i]) / self.scale[i]
         return normalized_data
 
     def fit_transform(self, data):
@@ -45,11 +45,12 @@ class MinMaxScaler():
         self.range = self.max - self.min
 
     def transform(self, data):
+        print("MinMax")
         if self.min is None or self.max is None:
             raise RuntimeError("Scaler must be fitted to the data before transform.")
         normalized_data = np.zeros(data.shape)
         for i, col in enumerate(data.T):
-            normalized_data[:, i] = (col - self.min) / self.range
+            normalized_data[:, i] = (col - self.min[i]) / self.range[i]
         return normalized_data
 
     def fit_transform(self, data):

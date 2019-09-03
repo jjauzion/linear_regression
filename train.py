@@ -29,6 +29,7 @@ parser.add_argument("-o", "--output", type=str, default="model/model.pkl", help=
 parser.add_argument("--y_col", type=str, choices=["first", "last"], default="last", help="Position of the Y column")
 parser.add_argument("--scaler", type=str, choices=["standard", "minmax"], default="standard", help="Define the scaler to be used to sclae the training data set")
 parser.add_argument("--no_header", action="store_true", help="The csv data file has no header (ie: 1st line is data)")
+parser.add_argument("--data_augmentation", action="store_true", help="Will add the square value of X last column to train data set for 2nd degree polynomal fit")
 parser.add_argument("-i", "--nb_iter", type=check_positive, default=200, help="number of iteration for the training")
 parser.add_argument("-lr", "--learning_rate", type=check_positive_float, default=0.05, help="number of iteration for the training")
 parser.add_argument("-v", "--verbose", type=int, choices=[0, 1, 2], default=1,
@@ -45,8 +46,8 @@ if Path(args.output).is_file():
     if overwrite == "n":
         exit(0)
 model = LinearRegression()
-model.load_data_from_csv(args.data, y_col=args.y_col, remove_header=False if args.no_header else True)
-model.train(args.nb_iter, args.learning_rate, verbose=args.verbose)
+model.load_data_from_csv(args.data, y_col=args.y_col, remove_header=False if args.no_header else True, data_augmentation=args.data_augmentation)
+model.train(args.nb_iter, args.learning_rate, scaler_type=args.scaler, verbose=args.verbose)
 model.save_model(args.output)
 if args.verbose > 0:
     print("Model saved to {}".format(args.output))

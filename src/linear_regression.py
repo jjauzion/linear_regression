@@ -3,14 +3,23 @@ import csv
 from pathlib import Path
 import matplotlib.pyplot as plt
 import pickle
+import math
 
 from . import scaler
 
 
 class LinearRegression:
 
-    def __init__(self, verbose=False):
-        self.accuracy = 0
+    @staticmethod
+    def data_augmentation(x):
+        return np.vstack((x[:, -1],
+                          x[:, -1] ** 2
+                          )).T
+        # return np.vstack((x[:, -1], np.array(list(map(lambda val: math.exp(val / 10000), x[:, -1]))))).T
+
+    def __init__(self, verbose=1):
+        self.rmse = -1
+        self.mae = -1
         self.weight = None
         self.scaler = None
         self.nb_iter = 0
@@ -20,27 +29,31 @@ class LinearRegression:
         self.X_original = None
         self.y = None
         self.verbose = verbose
+        self.augmented_data = False
+        self.y_pred = None
 
     def plot_training(self):
         fig = plt.figure("Training synthesis")
         plt.subplot(121)
-        plt.plot(self.cost_history)
+        start = 500
+        plt.plot(range(start, len(self.cost_history)), self.cost_history[start:])
         plt.title("Cost history", )
         plt.xlabel("nb of iterations")
         plt.ylabel("Cost")
         plt.subplot(122)
-        plt.scatter(x=self.X_original, y=self.y)
+        plt.plot(self.X_original, self.y, 'xr', self.X_original, self.y_pred, 'b')
         plt.title("Training dataset")
         plt.xlabel("mileage")
         plt.ylabel("price")
         plt.show()
 
-    def load_data_from_csv(self, csv_file, y_col="first", remove_header=False):
+    def load_data_from_csv(self, csv_file, y_col="first", remove_header=False, data_augmentation=False):
         """
         load data from a comma (',') separated file where columns are parameters and line experience
         :param csv_file:
         :param y_col: "first" or "last". Tell whether the column with the data we want to predict is in 1st or last position
         :param remove_header:
+        :param data_augmentation: if true, one column will be added to the data set, being the square of the last column
         :return:
         """
         if y_col != "first" and y_col != "last":
@@ -62,6 +75,9 @@ class LinearRegression:
                 print("Error while reading data csv file ('{}') : {}".format(csv_file, err))
                 exit(0)
         self.X_original = np.copy(self.X)
+        if data_augmentation:
+            self.X = LinearRegression.data_augmentation(self.X)
+            self.augmented_data = True
 
     def _compute_hypothesis(self):
         """
@@ -115,15 +131,25 @@ class LinearRegression:
         for i in range(nb_iter):
             self.weight = self._update_weight()
             self.cost_history.append(self._compute_cost())
-        final_hyp = self._compute_hypothesis()
-        self.accuracy = np.average(abs(final_hyp - self.y))
+        self.y_pred = self._compute_hypothesis()
+        self.rmse = math.sqrt(np.sum((self.y_pred - self.y) ** 2) / self.y.shape[0])
+        self.mae = np.sum(abs(self.y_pred - self.y)) / self.y.shape[0]
         if verbose > 0:
             print("Training completed!")
-            print("Accuracy on train set = {}".format(self.accuracy))
+            print("Model evaluation: RMSE = {} ; MAE = {}".format(self.rmse, self.mae))
         if verbose > 1:
             self.plot_training()
 
-    def predict(self, x):
+    def plot_prediction(self, mileage, prediction):
+        if self.X_original is None:
+            return False
+        plt.scatter(x=self.X_original[:, 0], y=self.y, label="training Dataset")
+        poly = self.predict(self.X_original, verbose=0)
+        plt.plot(mileage, prediction, 'og', self.X_original[:, 0], poly, 'xr')
+        plt.show()
+        return True
+
+    def predict(self, x, verbose=1):
         """
         Make prediction based on x
         :param x: List or 1 by n numpy array with n = nb of parameter
@@ -131,18 +157,20 @@ class LinearRegression:
         """
         if not isinstance(x, np.ndarray):
             if not isinstance(x, list):
-                raise TypeError("x shall be a list or a np array")
+                raise TypeError("x shall be a list or a np array. Got {}".format(x))
             x_pred = np.array([x])
         else:
             x_pred = x
+        if self.augmented_data:
+            x_pred = LinearRegression.data_augmentation(x_pred)
         if self.scaler:
             x_pred = self.scaler.transform(x_pred)
         x_pred = np.insert(x_pred, 0, np.ones(x_pred.shape[0]), axis=1)
         if self.weight is None:
             self.weight = np.zeros((x_pred.shape[1], 1))
         prediction = np.matmul(x_pred, self.weight)
-        # plt.scatter(self.X_original, self.y, c='blue')
-        # plt.scatter(x, prediction, c='red')
+        if verbose == 2:
+            self.plot_prediction(x[0], prediction)
         return prediction
 
     def plot_train_set(self):

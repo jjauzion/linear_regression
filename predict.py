@@ -43,7 +43,8 @@ while 1:
         else:
             print("Mileage shall be positive. Got {}".format(mileage))
 print("mileage = {}".format(mileage))
-price = model.predict([mileage])
+x = [mileage]
+price = model.predict(x, verbose=2)
 print("Estimated price : {}".format(price))
-if model.X:
-    plot_synthesis(model, mileage, price)
+# if model.X is not None:
+    # plot_synthesis(model, mileage, price)
