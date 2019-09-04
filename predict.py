@@ -27,8 +27,10 @@ args = parser.parse_args()
 
 model = LinearRegression()
 loaded = False
-if Path(args.model).is_file():
+try:
     loaded = model.load_model(args.model)
+except (IsADirectoryError, PermissionError, FileNotFoundError, FileExistsError, NotADirectoryError) as err:
+    print("Error: can't load model from '{}' because : {}".format(args.model, err))
 if not loaded:
     print("--> WARNING: No valid model file found. Prediction will be done with untrained model.")
 if args.mileage < 0:
