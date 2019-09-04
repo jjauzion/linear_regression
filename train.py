@@ -25,7 +25,7 @@ def check_positive_float(value):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("data", type=str, help="Path to data file")
-parser.add_argument("-o", "--output", type=str, default="model/model.pkl", help="File where to save the model after training")
+parser.add_argument("-o", "--output", type=str, default="model.pkl", help="File where to save the model after training")
 parser.add_argument("--y_col", type=str, choices=["first", "last"], default="last", help="Position of the Y column")
 parser.add_argument("--scaler", type=str, choices=["standard", "minmax", "identity"], default="standard", help="Define the scaler to be used to sclae the training data set")
 parser.add_argument("--no_header", action="store_true", help="The csv data file has no header (ie: 1st line is data)")

@@ -36,6 +36,11 @@ if __name__ == "__main__":
     file = Path(args.output)
     df = generate(1000, 250000, 200000)
     plt.scatter(x=df[:, 0], y=df[:, 1])
+    try:
+        with file.open(mode='w', encoding='utf-8') as fp:
+            np.savetxt(fp, df, delimiter=",")
+        print("Dataset save to '{}'".format(file))
+    except (IsADirectoryError, PermissionError, FileNotFoundError, FileExistsError, NotADirectoryError) as err:
+        print("Error: can't save data to '{}' because : {}".format(file, err))
+        exit(0)
     plt.show()
-    with file.open(mode='w', encoding='utf-8') as fp:
-        np.savetxt(fp, df, delimiter=",")

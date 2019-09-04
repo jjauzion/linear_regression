@@ -21,7 +21,7 @@ def plot_synthesis(model, mileage, price):
     plt.show()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--model", type=str, default="model/model.pkl", help="Path to saved model pickle")
+parser.add_argument("model", type=str, help="Path to saved model pickle")
 parser.add_argument("--mileage", type=int, default=-1, help="Mileage of the car you want to price")
 args = parser.parse_args()
 
