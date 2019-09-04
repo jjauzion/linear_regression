@@ -32,6 +32,11 @@ class LinearRegression:
         self.augmented_data = False
         self.y_pred = None
 
+    def describe(self):
+        print("Weights :\n{}".format(self.weight))
+        print("Scale : {}".format(self.scaler))
+        print("model precision: RMSE = {} ; MAE = {}".format(self.rmse, self.mae))
+
     def plot_training(self):
         fig = plt.figure("Training synthesis")
         plt.subplot(121)
@@ -61,6 +66,23 @@ class LinearRegression:
 
     def print_weight(self):
         print(self.weight)
+
+    def load_model(self, file):
+        with Path(file).open(mode='rb') as fd:
+            try:
+                model = pickle.load(fd)
+            except (pickle.UnpicklingError, EOFError) as err:
+                print("Can't load model from '{}' because : {}".format(file, err))
+                return False
+        if not isinstance(model, dict):
+            print("Given file '{}' is not a valid LinearRegression model".format(file))
+            return False
+        for key in model.keys():
+            if key not in self.__dict__.keys():
+                print("Given file '{}' is not a valid LinearRegression model".format(file))
+                return False
+        self.__dict__.update(model)
+        return True
 
     def load_data_from_csv(self, csv_file, y_col="first", remove_header=False, data_augmentation=False):
         """
@@ -189,20 +211,3 @@ class LinearRegression:
     def save_model(self, file):
         with Path(file).open(mode='wb') as fd:
             pickle.dump(self.__dict__, fd)
-
-    def load_model(self, file):
-        with Path(file).open(mode='rb') as fd:
-            try:
-                model = pickle.load(fd)
-            except (pickle.UnpicklingError, EOFError) as err:
-                print("Can't load model from '{}' because : {}".format(file, err))
-                return False
-        if not isinstance(model, dict):
-            print("Given file '{}' is not a valid LinearRegression model".format(file))
-            return False
-        for key in model.keys():
-            if key not in self.__dict__.keys():
-                print("Given file '{}' is not a valid LinearRegression model".format(file))
-                return False
-        self.__dict__.update(model)
-        return True

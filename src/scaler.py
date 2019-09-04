@@ -5,10 +5,10 @@ class IdentityScale:
     """
     No scale, return data as is.
     """
+    name = "IdentityScale"
 
-    def __init__(self):
-        self.mean = None
-        self.scale = None
+    def __repr__(self):
+        return "{}".format(self.name)
 
     def fit(self, data):
         return True
@@ -23,9 +23,14 @@ class IdentityScale:
 
 class MeanNormScaler:
 
+    name = "MeanNormScale"
+
     def __init__(self):
         self.mean = None
         self.scale = None
+
+    def __repr__(self):
+        return "{} ; mean = {} ; std = {}".format(self.name, self.mean, self.scale)
 
     def fit(self, data):
         """
@@ -50,10 +55,15 @@ class MeanNormScaler:
 
 class MinMaxScaler():
 
+    name = "MeanNormScale"
+
     def __init__(self):
         self.min = None
         self.max = None
         self.range = None
+
+    def __repr__(self):
+        return "{} ; min = {} ; max = {}".format(self.name, self.min, self.max)
 
     def fit(self, data):
         """

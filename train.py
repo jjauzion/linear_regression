@@ -37,22 +37,23 @@ parser.add_argument("-v", "--verbose", type=int, choices=[0, 1, 2], default=1,
                     help="verbose mode: 0 = no print ; 1 = print result ; 2 = plot result")
 args = parser.parse_args()
 
-if not Path(args.data).is_file():
-    print("File {} not found.".format(args.data))
-    exit(0)
 if Path(args.output).is_file():
     overwrite = "y" if args.force else None
     while overwrite != "y" and overwrite != "n":
-        overwrite = input("File {} already exist. Do you want to overwrite it ? (y/n)\n".format(args.output))
+        overwrite = input("File '{}' already exist. Do you want to overwrite it ? (y/n)\n".format(args.output))
     if overwrite == "n":
         exit(0)
 model = LinearRegression()
-model.load_data_from_csv(args.data, y_col=args.y_col, remove_header=False if args.no_header else True, data_augmentation=args.data_augmentation)
+try:
+    model.load_data_from_csv(args.data, y_col=args.y_col, remove_header=False if args.no_header else True, data_augmentation=args.data_augmentation)
+except (IsADirectoryError, PermissionError, FileNotFoundError, FileExistsError, NotADirectoryError) as err:
+    print("Error: can't load data from '{}' because : {}".format(args.data, err))
+    exit(0)
 model.train(args.nb_iter, args.learning_rate, scaler_type=args.scaler, verbose=args.verbose)
 try:
     model.save_model(args.output)
-except FileNotFoundError as err:
-    print("Error: can't save model to '{}'".format(args.output))
+except (IsADirectoryError, PermissionError, FileNotFoundError, FileExistsError, NotADirectoryError) as err:
+    print("Error: can't save model to '{}' because : {}".format(args.output, err))
     exit(0)
 if args.verbose > 0:
     print("Model saved to {}".format(args.output))
