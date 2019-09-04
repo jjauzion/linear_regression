@@ -49,6 +49,7 @@ class LinearRegression:
         plt.show()
 
     def plot_prediction(self, mileage, prediction):
+        print("Estimated price : {}".format(prediction[0][0]))
         if self.X_original is None:
             return False
         plt.scatter(self.X_original[:, 0], self.y, c='k', marker='.', label="training Dataset")

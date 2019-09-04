@@ -49,7 +49,11 @@ if Path(args.output).is_file():
 model = LinearRegression()
 model.load_data_from_csv(args.data, y_col=args.y_col, remove_header=False if args.no_header else True, data_augmentation=args.data_augmentation)
 model.train(args.nb_iter, args.learning_rate, scaler_type=args.scaler, verbose=args.verbose)
-model.save_model(args.output)
+try:
+    model.save_model(args.output)
+except FileNotFoundError as err:
+    print("Error: can't save model to '{}'".format(args.output))
+    exit(0)
 if args.verbose > 0:
     print("Model saved to {}".format(args.output))
 

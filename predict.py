@@ -49,4 +49,3 @@ if args.mileage < 0:
 else:
     x = [args.mileage]
 price = model.predict(x, verbose=2)
-print("Estimated price : {}".format(price[0][0]))
