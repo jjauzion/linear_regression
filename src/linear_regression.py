@@ -35,13 +35,12 @@ class LinearRegression:
     def plot_training(self):
         fig = plt.figure("Training synthesis")
         plt.subplot(121)
-        start = 500
-        plt.plot(range(start, len(self.cost_history)), self.cost_history[start:])
-        plt.title("Cost history", )
+        plt.plot(self.cost_history)
+        plt.title("Cost history")
         plt.xlabel("nb of iterations")
+        plt.ylim(0, 5)
         plt.ylabel("Cost")
         plt.subplot(122)
-        # pred = np.sort(np.hstack((self.X_original, self.y_pred)), axis=0)
         order_ind = self.X_original[:,0].argsort(axis=0)
         plt.plot(self.X_original[order_ind], self.y[order_ind], 'xr', self.X_original[order_ind], self.y_pred[order_ind], 'b')
         plt.title("Training dataset")
@@ -53,11 +52,14 @@ class LinearRegression:
         if self.X_original is None:
             return False
         plt.scatter(self.X_original[:, 0], self.y, c='k', marker='.', label="training Dataset")
-        pred = np.sort(np.hstack((self.X_original, self.y_pred)), axis=0)
-        plt.plot(mileage, prediction, '*g', pred[:, 0], pred[:, 1], 'r', markersize=20)
+        order_ind = self.X_original[:,0].argsort(axis=0)
+        plt.plot(mileage, prediction, '*g', self.X_original[order_ind], self.y_pred[order_ind], 'r', markersize=20)
         plt.legend(("prediction", "polyfit line", "train dataset"))
         plt.show()
         return True
+
+    def print_weight(self):
+        print(self.weight)
 
     def load_data_from_csv(self, csv_file, y_col="first", remove_header=False, data_augmentation=False):
         """
@@ -133,6 +135,8 @@ class LinearRegression:
             self.scaler = scaler.MeanNormScaler()
         elif scaler_type == "minmax":
             self.scaler = scaler.MinMaxScaler()
+        elif scaler_type == "identity":
+            self.scaler = scaler.IdentityScale()
         else:
             print("'{}' is not a valid scaler. Standard scaler will be used instead".format(scaler_type))
             self.scaler = scaler.MeanNormScaler()

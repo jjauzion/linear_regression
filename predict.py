@@ -31,7 +31,6 @@ if Path(args.model).is_file():
     loaded = model.load_model(args.model)
 if not loaded:
     print("--> WARNING: No valid model file found. Prediction will be done with untrained model.")
-print("mileage = ", args.mileage)
 if args.mileage < 0:
     while 1:
         mileage = input("What mileage is your car ?\n")
@@ -50,6 +49,4 @@ if args.mileage < 0:
 else:
     x = [args.mileage]
 price = model.predict(x, verbose=2)
-print("Estimated price : {}".format(price))
-# if model.X is not None:
-    # plot_synthesis(model, mileage, price)
+print("Estimated price : {}".format(price[0][0]))

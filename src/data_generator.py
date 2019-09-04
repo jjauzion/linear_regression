@@ -1,8 +1,8 @@
 import numpy as np
-import math
 from pathlib import Path
 import matplotlib.pyplot as plt
 import random
+import argparse
 
 
 def exp_decrease(x, x_origin=150000):
@@ -30,10 +30,11 @@ def generate(nb_of_exprience, mileage_max, new_value):
 
 
 if __name__ == "__main__":
-    file = Path("../data/price_exp.csv")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-o", "--output", type=str, default="data/generated.csv", help="output file")
+    args = parser.parse_args()
+    file = Path(args.output)
     df = generate(1000, 250000, 200000)
-    print(df)
-    print(df.shape)
     plt.scatter(x=df[:, 0], y=df[:, 1])
     plt.show()
     with file.open(mode='w', encoding='utf-8') as fp:

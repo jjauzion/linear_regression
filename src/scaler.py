@@ -1,6 +1,26 @@
 import numpy as np
 
 
+class IdentityScale:
+    """
+    No scale, return data as is.
+    """
+
+    def __init__(self):
+        self.mean = None
+        self.scale = None
+
+    def fit(self, data):
+        return True
+
+    def transform(self, data):
+        return data
+
+    def fit_transform(self, data):
+        self.fit(data)
+        return self.transform(data)
+
+
 class MeanNormScaler:
 
     def __init__(self):
